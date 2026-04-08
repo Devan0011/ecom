@@ -47,22 +47,3 @@ db.users.updateOne(
   { $set: { role: "admin" } }
 )
 ```
-
-
-
-
-
-cd "D:\Programming\Web pages\ecommerce"
-git init
-git add .
-git commit -m "Initial commit - ElectroHub"
-git branch -M main
-git remote add origin https://github.com/Devan0011/ecom.git
-git push -u origin main
-
-
-git remote set-url origin https://github.com/Devan0011/ecom.git
-git push -u origin main
-
-
-Devan0011/devanportifolio
