@@ -1,0 +1,10 @@
+# Backend ignores
+
+node_modules/
+.env
+.env.local
+.env.*.local
+uploads/
+dist/
+*.log
+.DS_Store
