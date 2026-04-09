@@ -68,7 +68,9 @@ export const useAuthStore = create((set) => ({
       return true
     } catch (error) {
       set({ isLoading: false, authChecked: true })
-      toast.error(error.response?.data?.message || 'Registration failed')
+      const message = error.response?.data?.message
+        || (error.request ? 'Cannot reach server. Check deployment API URL and backend status.' : 'Registration failed')
+      toast.error(message)
       return false
     }
   },
@@ -92,7 +94,9 @@ export const useAuthStore = create((set) => ({
       return true
     } catch (error) {
       set({ isLoading: false, authChecked: true })
-      toast.error(error.response?.data?.message || 'Login failed')
+      const message = error.response?.data?.message
+        || (error.request ? 'Cannot reach server. Check deployment API URL and backend status.' : 'Login failed')
+      toast.error(message)
       return false
     }
   },

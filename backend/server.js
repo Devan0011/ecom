@@ -22,14 +22,52 @@ const homeConfigRoutes = require("./routes/homeConfig");
 // Initialize app
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+const normalizeOrigin = (origin = "") => origin.trim().replace(/\/+$/, "");
+const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === "true";
+const allowedOriginPatterns = (process.env.FRONTEND_URL || "http://localhost:3000")
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => normalizeOrigin(origin))
   .filter(Boolean);
+const wildcardPatterns = allowedOriginPatterns.filter((origin) => origin.startsWith("*."));
+const allowedOrigins = allowedOriginPatterns.filter((origin) => !origin.startsWith("*."));
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (allowedOrigins.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  try {
+    const { hostname } = new URL(normalizedOrigin);
+    const matchesWildcard = wildcardPatterns.some((pattern) => {
+      const suffix = pattern.slice(2);
+      return hostname === suffix || hostname.endsWith(`.${suffix}`);
+    });
+    if (matchesWildcard) {
+      return true;
+    }
+
+    if (allowVercelPreviews && hostname.endsWith(".vercel.app")) {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return false;
+};
 
 const io = socketIo(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST"],
   },
 });
@@ -43,7 +81,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
