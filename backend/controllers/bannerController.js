@@ -24,7 +24,7 @@ exports.getActiveBanners = async (req, res, next) => {
           ],
         },
       ],
-    }).sort({ order: 1 });
+    }).sort({ order: 1 }).lean();
 
     res.status(200).json({
       success: true,
@@ -173,7 +173,7 @@ exports.updateBannerOrder = async (req, res, next) => {
       await Banner.findByIdAndUpdate(banners[i]._id, { order: banners[i].order });
     }
 
-    const updatedBanners = await Banner.find().sort({ order: 1 });
+    const updatedBanners = await Banner.find().sort({ order: 1 }).lean();
 
     res.status(200).json({
       success: true,

@@ -110,7 +110,7 @@ exports.getUserOrders = async (req, res, next) => {
       .populate("items.product")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit).lean();
 
     const total = await Order.countDocuments({ user: req.user._id });
 
@@ -144,7 +144,7 @@ exports.getOrderDetails = async (req, res, next) => {
 
     const order = await Order.findById(req.params.id)
       .populate("user", "firstName lastName email phone")
-      .populate("items.product");
+      .populate("items.product").lean();
 
     if (!order) {
       return res.status(404).json({
@@ -229,7 +229,7 @@ exports.getAllOrders = async (req, res, next) => {
       .populate("user", "firstName lastName email")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit).lean();
 
     const total = await Order.countDocuments(filter);
 
@@ -275,7 +275,7 @@ exports.getDashboardStats = async (req, res, next) => {
     const recentOrders = await Order.find()
       .populate("user", "firstName lastName")
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(5).lean();
 
     res.status(200).json({
       success: true,

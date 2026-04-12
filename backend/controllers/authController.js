@@ -112,7 +112,7 @@ exports.login = async (req, res, next) => {
 // Get current user profile
 exports.getProfile = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).populate("wishlist");
+    const user = await User.findById(req.user._id).populate("wishlist").lean();
 
     res.status(200).json({
       success: true,
@@ -199,7 +199,7 @@ exports.getAllUsers = async (req, res, next) => {
     const users = await User.find()
       .select("-password")
       .skip(skip)
-      .limit(limit);
+      .limit(limit).lean();
 
     const total = await User.countDocuments();
 

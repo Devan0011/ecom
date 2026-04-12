@@ -7,7 +7,7 @@ const Product = require("../models/Product");
 // Get wishlist
 exports.getWishlist = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).populate("wishlist");
+    const user = await User.findById(req.user._id).populate("wishlist").lean();
 
     res.status(200).json({
       success: true,

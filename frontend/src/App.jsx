@@ -1,5 +1,5 @@
 // Main App Component
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/authStore'
@@ -8,25 +8,25 @@ import { useAuthStore } from './store/authStore'
 import Layout from './components/Layout'
 
 // Pages - Public
-import Home from './pages/Home'
-import Products from './pages/Products'
-import ProductDetail from './pages/ProductDetail'
-import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import OrderSuccess from './pages/OrderSuccess'
-import UserProfile from './pages/UserProfile'
-import WishList from './pages/WishList'
-import Orders from './pages/Orders'
+const Home = lazy(() => import('./pages/Home'))
+const Products = lazy(() => import('./pages/Products'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Checkout = lazy(() => import('./pages/Checkout'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const OrderSuccess = lazy(() => import('./pages/OrderSuccess'))
+const UserProfile = lazy(() => import('./pages/UserProfile'))
+const WishList = lazy(() => import('./pages/WishList'))
+const Orders = lazy(() => import('./pages/Orders'))
 
 // Pages - Admin
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminProducts from './pages/admin/AdminProducts'
-import AdminOrders from './pages/admin/AdminOrders'
-import AdminUsers from './pages/admin/AdminUsers'
-import AdminBanners from './pages/admin/AdminBanners'
-import AdminHomeContent from './pages/admin/AdminHomeContent'
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'))
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'))
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
+const AdminBanners = lazy(() => import('./pages/admin/AdminBanners'))
+const AdminHomeContent = lazy(() => import('./pages/admin/AdminHomeContent'))
 
 export default function App() {
   const { isAuthenticated, user, checkAuth, authChecked } = useAuthStore()
@@ -73,7 +73,12 @@ export default function App() {
     <>
       <Toaster position="top-right" />
       <Layout isDark={isDark} setIsDark={setIsDark}>
-        <Routes>
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        }>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -180,7 +185,8 @@ export default function App() {
               </AdminRoute>
             }
           />
-        </Routes>
+          </Routes>
+        </Suspense>
       </Layout>
     </>
   )

@@ -85,7 +85,7 @@ exports.getAllProducts = async (req, res, next) => {
     const products = await Product.find(filter)
       .sort(sortBy)
       .skip(skip)
-      .limit(limit);
+      .limit(limit).lean();
 
     const total = await Product.countDocuments(filter);
 
@@ -115,7 +115,7 @@ exports.getFeaturedProducts = async (req, res, next) => {
     const products = await Product.find({
       isActive: true,
       isFeatured: true,
-    }).limit(limit);
+    }).limit(limit).lean();
 
     res.status(200).json({
       success: true,
@@ -132,7 +132,7 @@ exports.getFeaturedProducts = async (req, res, next) => {
 // Get single product with reviews
 exports.getProductDetails = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).lean();
 
     if (!product) {
       return res.status(404).json({
@@ -143,7 +143,7 @@ exports.getProductDetails = async (req, res, next) => {
 
     const reviews = await Review.find({ product: req.params.id })
       .populate("user", "firstName lastName avatar")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }).lean();
 
     res.status(200).json({
       success: true,
@@ -257,7 +257,7 @@ exports.updateProduct = async (req, res, next) => {
 // Delete product (Admin only)
 exports.deleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).lean();
 
     if (!product) {
       return res.status(404).json({

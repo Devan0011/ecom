@@ -124,7 +124,7 @@ exports.updateReview = async (req, res, next) => {
     ).populate("user", "firstName lastName avatar");
 
     // Update product rating
-    const reviews = await Review.find({ product: review.product });
+    const reviews = await Review.find({ product: review.product }).lean();
     const avgRating =
       reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
